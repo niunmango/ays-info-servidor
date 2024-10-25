@@ -1,0 +1,60 @@
+name: Crear y Publicar la imagen Docker en ghcr.io
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Login en GitHub Container Registry (ghcr.io)
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Guardar la fecha en ENV
+      run: |
+        echo "DATE=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+
+    - name: Poner nombre del repo en minusculas (no acepta mayusculas)
+      id: repo
+      run: echo "REPO=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+    - name: Build y push de la imagen Docker
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ghcr.io/${{ env.REPO }}:${{ env.DATE }},ghcr.io/${{ env.REPO }}:latest
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Guardar la fecha en ENV
+      run: |
+        echo "DATE=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+
+    - name: Poner nombre del repo en minusculas (no acepta mayusculas)
+      id: repo
+      run: echo "REPO=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+    - name: Login en GitHub Container Registry (ghcr.io)
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Probar si un contenedor creado con la imagen da una página en el puerto 80
+      run: |
+        docker run -d -p 80:80 ghcr.io/${{ env.REPO }}:${{ env.DATE }}
+        curl --max-time 10 --retry 5 http://localhost:80

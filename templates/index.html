@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Información del Servidor</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif; /* Material Design font */
+            background-color: #f5f5f5; /* Light gray background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1, h2 {
+            color: #3f51b5; /* Material Design blue */
+        }
+
+        p {
+            color: #212121; /* Dark gray text */
+            margin-bottom: 10px;
+        }
+
+        pre {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Información del Servidor</h1>
+        <p>Nombre del Host: {{ hostname }}</p>
+        <p>Fecha Actual: {{ current_date }}</p>
+        <p>Espacio Total: {{ total_space }}</p>
+        <p>Espacio Libre: {{ free_space }}</p>
+        <h2>Salida del Comando Top</h2>
+        <pre id="top-output">{{ top_output }}</pre>
+    </div>
+    <script>
+        setInterval(function() {
+            fetch('/top')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('top-output').textContent = data;
+                });
+        }, 5000);
+    </script>
+</body>
+</html>
