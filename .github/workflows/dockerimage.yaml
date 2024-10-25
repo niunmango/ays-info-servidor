@@ -56,5 +56,5 @@ jobs:
 
     - name: Probar si un contenedor creado con la imagen da una página en el puerto 80
       run: |
-        docker run -d -p 80:80 ghcr.io/${{ env.REPO }}:${{ env.DATE }}
+        docker run -d -p 80:5000 ghcr.io/${{ env.REPO }}:${{ env.DATE }}
         curl --max-time 10 --retry 5 http://localhost:80
