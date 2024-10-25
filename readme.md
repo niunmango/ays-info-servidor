@@ -33,7 +33,7 @@ docker build -t mi-contenedor .
 Y luego lanzar una imagen con:
 
 ```
-docker run -p 80:80 mi-contenedor -d
+docker run -p 80:5000 mi-contenedor -d
 ```
 
 **Workflow:**
@@ -54,7 +54,7 @@ La imagen generada se encuentra en: https://github.com/niunmango/ays-info-servid
 Puede lanzarse un contenedor usando:
 
 ```
-docker run -d -p 80:80 ghcr.io/niunmang/ays-info-servidor:latest
+docker run -d -p 80:5000 ghcr.io/niunmang/ays-info-servidor:latest
 ```
 
 Y luego acceder a http://localhost
