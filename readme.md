@@ -2,11 +2,11 @@
 **Materia: Automatización y Scripting**
 
 **Proyecto:
-   Página PHP con información del servidor**
+   Página en Python con Flask con información del servidor**
 
 **Descripción:**
 
-Este proyecto consiste en crear una página PHP que muestre información del servidor en el que se ejecuta. La información que se muestra incluye el nombre del servidor, la versión de PHP, la versión de Linux, la fecha y hora actuales, y la IP del servidor.
+Este proyecto consiste en crear una página básica que muestre información del servidor en el que se ejecuta. La información que se muestra incluye el nombre del servidor, fecha y hora, espacio total de disco y libre.
 
 **Instalación:**
 
