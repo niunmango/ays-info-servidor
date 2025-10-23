@@ -47,7 +47,7 @@ El workflow realiza las siguientes acciones:
 * Comprueba si el usuario tiene permisos para construir y publicar imágenes Docker.
 * Comprueba si la imagen Docker ya existe. Si no existe, la construye.
 * Publica la imagen Docker en el registro de contenedores de GitHub.
-* Comprueba que un contenedor lanzado con la imagen creada sirve una página en el puerto 80
+* Comprueba que un contenedor lanzado con la imagen creada sirve una página en el puerto 5000
 
 **Uso de imagen:**
 
