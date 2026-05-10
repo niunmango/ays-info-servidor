@@ -1,6 +1,6 @@
 # 📊 AYS - Información del Servidor
 
-Proyecto educativo para demostrar pipelines CI/CD con **GitHub Actions** y despliegue de contenedores **Docker**.
+Proyecto educativo para demostrar pipelines CI/CD con **GitHub Actions** y despliegue de contenedores **Podman** (predominante) y **Docker** (alternativa).
 
 ## 🎯 Descripción
 
@@ -12,7 +12,21 @@ Esta aplicación Flask muestra información en tiempo real del servidor donde se
 
 ## 🚀 Instalación
 
-### Opción 1: Con Docker (recomendado)
+### Opción 1: Con Podman (recomendado)
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/niunmango/ays-info-servidor.git
+cd ays-info-servidor
+
+# Construir la imagen
+podman build -t ays-info-servidor .
+
+# Ejecutar el contenedor
+podman run -d -p 5000:5000 --name servidor-info ays-info-servidor
+```
+
+### Opción 2: Con Docker (alternativa)
 
 ```bash
 # Clonar el repositorio
@@ -26,7 +40,7 @@ docker build -t ays-info-servidor .
 docker run -d -p 5000:5000 --name servidor-info ays-info-servidor
 ```
 
-### Opción 2: Sin Docker (desarrollo local)
+### Opción 3: Sin contenedor (desarrollo local)
 
 ```bash
 # Crear entorno virtual
@@ -41,6 +55,18 @@ python app.py
 ```
 
 ## 🐳 Uso de la imagen desde GitHub Container Registry
+
+### Con Podman (recomendado)
+
+```bash
+# Descargar la imagen más reciente
+podman pull ghcr.io/niunmango/ays-info-servidor:latest
+
+# Ejecutar
+podman run -d -p 5000:5000 ghcr.io/niunmango/ays-info-servidor:latest
+```
+
+### Con Docker (alternativa)
 
 ```bash
 # Descargar la imagen más reciente
