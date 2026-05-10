@@ -1,66 +1,98 @@
+# 📊 AYS - Información del Servidor
 
-**Materia: Automatización y Scripting**
+Proyecto educativo para demostrar pipelines CI/CD con **GitHub Actions** y despliegue de contenedores **Docker**.
 
-**Proyecto:
-   Página en Python con Flask con información del servidor**
+## 🎯 Descripción
 
-**Descripción:**
+Esta aplicación Flask muestra información en tiempo real del servidor donde se ejecuta:
+- Nombre del host
+- Fecha y hora actual
+- Espacio total y libre en disco
+- Salida del comando `top` (actualización automática cada 4 segundos)
 
-Este proyecto consiste en crear una página básica que muestre información del servidor en el que se ejecuta. La información que se muestra incluye el nombre del servidor, fecha y hora, espacio total de disco y libre.
+## 🚀 Instalación
 
-**Instalación:**
+### Opción 1: Con Docker (recomendado)
 
-1. Clonar el repositorio desde GitHub:
-
-```
+```bash
+# Clonar el repositorio
 git clone https://github.com/niunmango/ays-info-servidor.git
-```
-
-2. Navegar a la carpeta del proyecto:
-
-```
 cd ays-info-servidor
+
+# Construir la imagen
+docker build -t ays-info-servidor .
+
+# Ejecutar el contenedor
+docker run -d -p 5000:5000 --name servidor-info ays-info-servidor
 ```
 
-**Uso:**
+### Opción 2: Sin Docker (desarrollo local)
 
-Para acceder a la página, armar el contenedor con:
+```bash
+# Crear entorno virtual
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Ejecutar la aplicación
+python app.py
 ```
-docker build -t mi-contenedor .
-```
 
-Y luego lanzar una imagen con:
+## 🐳 Uso de la imagen desde GitHub Container Registry
 
-```
-docker run -p 5000:5000 mi-contenedor -d
-```
+```bash
+# Descargar la imagen más reciente
+docker pull ghcr.io/niunmango/ays-info-servidor:latest
 
-Acceder a http://localhost:5000
-
-**Workflow:**
-
-El proyecto también contiene un workflow de GitHub Actions que se utiliza para construir y publicar la imagen Docker del proyecto. El workflow se activa cuando se realiza un push a la rama `main` del repositorio.
-
-El workflow realiza las siguientes acciones:
-
-* Comprueba si el usuario tiene permisos para construir y publicar imágenes Docker.
-* Comprueba si la imagen Docker ya existe. Si no existe, la construye.
-* Publica la imagen Docker en el registro de contenedores de GitHub.
-* Comprueba que un contenedor lanzado con la imagen creada sirve una página en el puerto 5000
-
-**Uso de imagen:**
-
-La imagen generada se encuentra en: https://github.com/niunmango/ays-info-servidor/pkgs/container/ays-info-servidor
-
-Puede lanzarse un contenedor usando:
-
-```
+# Ejecutar
 docker run -d -p 5000:5000 ghcr.io/niunmango/ays-info-servidor:latest
 ```
 
-Y luego acceder a http://localhost:5000
+Luego acceder a: http://localhost:5000
 
-**Licencia:**
+## ⚙️ CI/CD con GitHub Actions
 
-Este proyecto está licenciado bajo la licencia GPLv3.
+El pipeline se activa automáticamente con cada `push` a la rama `main`:
+
+1. **Build**: Construye la imagen Docker
+2. **Push**: Publica la imagen en `ghcr.io`
+3. **Test**: Verifica que el contenedor funcione correctamente
+
+### Endpoints del pipeline
+
+| Job | Descripción |
+|-----|-------------|
+| `build` | Construye y sube la imagen a GHCR |
+| `test` | Valida que el contenedor responda en puerto 5000 |
+
+## 📝 Endpoints de la API
+
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Página principal con información del servidor |
+| `/health` | Endpoint de salud para healthchecks |
+| `/top` | Salida cruda del comando `top` |
+
+## 🛠️ Tecnologías utilizadas
+
+- **Python 3.12**
+- **Flask 3.x**
+- **Gunicorn** (servidor WSGI para producción)
+- **Docker**
+- **GitHub Actions**
+
+## 📋 Requisitos
+
+- Docker (para usar la imagen construida)
+- O Python 3.12+ con `pip` (para desarrollo local)
+
+## 📜 Licencia
+
+Este proyecto está licenciado bajo la **GPLv3**.
+
+---
+
+**Proyecto creado por:** niunmango  
+**Modificado por:** Hermes Agent (asistente del CURZAS - UNCo)
