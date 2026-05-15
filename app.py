@@ -2,7 +2,7 @@
 AYS - Información del Servidor
 ===============================
 Aplicación Flask que muestra información básica del servidor (hostname,
-fecha/hora, uso de disco, procesos activos).
+fecha/hora, uso de disco, procesos activos, memoria).
 
 Pensada como proyecto educativo para demostrar pipelines CI/CD con
 GitHub Actions y despliegue de contenedores Docker.
@@ -18,6 +18,7 @@ import os
 import platform
 import shutil
 import subprocess
+import psutil
 
 from flask import Flask, render_template, Response
 
@@ -53,6 +54,22 @@ def get_disk_usage() -> tuple[str, str]:
     return fmt(total), fmt(free)
 
 
+def get_memory_info() -> tuple[str, str]:
+    """Devuelve la memoria total y disponible del servidor en formato legible."""
+    mem = psutil.virtual_memory()
+    total = mem.total
+    available = mem.available
+
+    def fmt(size_bytes: int) -> str:
+        for unit in ("B", "KB", "MB", "GB", "TB"):
+            if size_bytes < 1024:
+                return f"{size_bytes:.1f} {unit}"
+            size_bytes /= 1024
+        return f"{size_bytes:.1f} PB"
+
+    return fmt(total), fmt(available)
+
+
 def get_top_output() -> str:
     """Ejecuta `top` en modo batch y devuelve la salida como texto."""
     try:
@@ -71,6 +88,7 @@ def index():
     hostname = platform.node()
     current_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     total_space, free_space = get_disk_usage()
+    mem_total, mem_available = get_memory_info()
     top_output = get_top_output()
 
     logger.info("Página servida para host=%s", hostname)
@@ -81,6 +99,8 @@ def index():
         current_date=current_date,
         total_space=total_space,
         free_space=free_space,
+        mem_total=mem_total,
+        mem_available=mem_available,
         top_output=top_output,
     )
 
