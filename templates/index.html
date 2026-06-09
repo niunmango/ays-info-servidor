@@ -22,6 +22,17 @@
             margin-bottom: 10px;
         }
 
+        .date-time {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d32f2f; /* Material Design red for emphasis */
+            background-color: #ffebee;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: inline-block;
+        }
+
         pre {
             background-color: #fff;
             border: 1px solid #ccc;
@@ -47,13 +58,29 @@
         <h1>Información del Servidor</h1>
         <h2>by niunmango</h2>
         <p>Nombre del Host: {{ hostname }}</p>
-        <p>Fecha Actual: {{ current_date }}</p>
+        <p class="date-time" id="date-time">Fecha Actual: {{ current_date }}</p>
         <p>Espacio Total: {{ total_space }}</p>
         <p>Espacio Libre: {{ free_space }}</p>
         <h2>Salida del Comando Top</h2>
         <pre id="top-output">{{ top_output }}</pre>
     </div>
     <script>
+        // Update date/time every second
+        setInterval(function() {
+            const now = new Date();
+            const dateString = now.toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('date-time').textContent = 'Fecha Actual: ' + dateString;
+        }, 1000);
+        
+        // Update top output every 4 seconds (existing functionality)
         setInterval(function() {
             fetch('/top')
                 .then(response => response.text())
