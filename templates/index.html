@@ -25,10 +25,28 @@
             --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
             --transition: all 0.25s cubic-bezier(0, 0, 0.2, 1);
+            --header-title-color: #002d62; /* Darker navy color in light mode for readability */
+        }
+
+        :root[data-theme="dark"] {
+            --primary: #a8c7fa;
+            --on-primary: #003062;
+            --primary-container: #004589;
+            --on-primary-container: #d3e4ff;
+            --background: #0f172a;
+            --on-background: #e2e8f0;
+            --surface: #1e293b;
+            --on-surface: #f1f5f9;
+            --surface-variant: #334155;
+            --on-surface-variant: #cbd5e1;
+            --outline: #8e9199;
+            --outline-variant: #43474e;
+            --shadow: rgba(0, 0, 0, 0.25);
+            --header-title-color: var(--primary);
         }
 
         @media (prefers-color-scheme: dark) {
-            :root {
+            :root:not([data-theme="light"]) {
                 --primary: #a8c7fa;
                 --on-primary: #003062;
                 --primary-container: #004589;
@@ -42,6 +60,7 @@
                 --outline: #8e9199;
                 --outline-variant: #43474e;
                 --shadow: rgba(0, 0, 0, 0.25);
+                --header-title-color: var(--primary);
             }
         }
 
@@ -82,7 +101,7 @@
             margin: 0;
             font-size: 1.8rem;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--header-title-color);
             display: flex;
             align-items: center;
             gap: 12px;
@@ -360,16 +379,48 @@
         footer a:hover {
             text-decoration: underline;
         }
-        body {font-family: 'Roboto', sans-serif; background:#e8e6e6; display:flex; flex-direction:column; align-items:center; min-height:100vh; margin:0;}
-        .container {background:#fff; padding:20px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,.1); width:80%; max-width:800px;}
-        h1, h2 {color:#3f51b5;}
-        .date-time {font-size:1.2em; font-weight:bold; color:#d32f2f; background:#ffebee; padding:8px 12px; border-radius:4px; margin:10px 0; display:inline-block;}
-        pre{background:#fff; border:1px solid #ccc; padding:10px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; margin-bottom:20px;}
-        .lang-toggle {margin-bottom:15px;}
-        .lang-toggle button {
-            background:#3f51b5; color:#fff; border:none; padding:8px 12px; margin-right:8px; border-radius:4px; cursor:pointer; font-size:0.9em;
+
+        .header-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
-        .lang-toggle button:hover {background:#303f9f;}
+
+        .theme-toggle-btn {
+            background: var(--surface-variant);
+            border: 1px solid var(--outline-variant);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--on-surface-variant);
+            transition: var(--transition);
+        }
+
+        .theme-toggle-btn:hover {
+            color: var(--on-background);
+            background: var(--primary-container);
+            border-color: var(--primary);
+        }
+
+        /* Show/hide icons depending on theme */
+        :root[data-theme="light"] .theme-icon-sun { display: none; }
+        :root[data-theme="light"] .theme-icon-moon { display: block; }
+        :root[data-theme="dark"] .theme-icon-sun { display: block; }
+        :root[data-theme="dark"] .theme-icon-moon { display: none; }
+
+        /* Fallbacks if data-theme is not explicitly set */
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .theme-icon-sun { display: block; }
+            :root:not([data-theme="light"]) .theme-icon-moon { display: none; }
+        }
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme="dark"]) .theme-icon-sun { display: none; }
+            :root:not([data-theme="dark"]) .theme-icon-moon { display: block; }
+        }
     </style>
 </head>
 <body class="lang-es">
@@ -393,9 +444,29 @@
                 <span lang="en">Real-time monitoring by niunmango</span>
             </p>
         </div>
-        <div class="segmented-control">
-            <button id="btn-es" class="active" onclick="changeLang('es')">Español</button>
-            <button id="btn-en" onclick="changeLang('en')">English</button>
+        <div class="header-controls">
+            <div class="segmented-control">
+                <button id="btn-es" class="active" onclick="changeLang('es')">Español</button>
+                <button id="btn-en" onclick="changeLang('en')">English</button>
+            </div>
+            <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Cambiar tema / Toggle theme">
+                <!-- Sun Icon -->
+                <svg class="theme-icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <!-- Moon Icon -->
+                <svg class="theme-icon-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
         </div>
     </header>
 
@@ -443,7 +514,7 @@
         <section class="card">
             <div class="card-content">
                 <div class="card-header">
-                    <svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
                         <rect x="6" y="6" width="12" height="8" rx="1" ry="1"/>
                         <circle cx="10" cy="17" r="1"/>
@@ -573,30 +644,6 @@
             <span lang="en">Created by niunmango | Modified by Hermes Agent</span>
         </p>
     </footer>
-    <div class="lang-toggle">
-        <button onclick="setLang('es')">Español</button>
-        <button onclick="setLang('en')">English</button>
-    </div>
-    <div id="es" class="lang-section" style="display:none;">
-        <h1>Información del Servidor</h1>
-        <h2>by niunmango</h2>
-        <p>Nombre del Host: {{ hostname }}</p>
-        <p class="date-time" id="date-time-es">Fecha Actual: {{ current_date }}</p>
-        <p>Espacio Total: {{ total_space }}</p>
-        <p>Espacio Libre: {{ free_space }}</p>
-        <h2>Salida del Comando Top</h2>
-        <pre id="top-output-es">{{ top_output }}</pre>
-    </div>
-    <div id="en" class="lang-section" style="display:none;">
-        <h1>Server Information</h1>
-        <h2>by niunmango</h2>
-        <p>Host Name: {{ hostname }}</p>
-        <p class="date-time" id="date-time-en">Current Date: {{ current_date }}</p>
-        <p>Total Space: {{ total_space }}</p>
-        <p>Free Space: {{ free_space }}</p>
-        <h2>Top Command Output</h2>
-        <pre id="top-output-en">{{ top_output }}</pre>
-    </div>
 </div>
 
 <script>
@@ -608,8 +655,22 @@ function changeLang(lang) {
 }
 
 // Load preferred language
-const savedLang = localStorage.getItem('preferred-lang') || 'es';
+const savedLang = localStorage.getItem('preferred-lang') || (navigator.language.startsWith('es') ? 'es' : 'en');
 changeLang(savedLang);
+
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('preferred-theme', newTheme);
+}
+
+// Load preferred theme
+const savedTheme = localStorage.getItem('preferred-theme');
+if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+}
 
 // Helper to parse human-readable storage sizes (e.g. "975.0 GB", "16.0 GB")
 function parseSize(sizeStr) {
@@ -667,17 +728,7 @@ updateStorage();
 updateMemory();
 
 // Update date/time every second
-function setLang(lang){
-    document.getElementById('es').style.display = lang==='es' ? 'block' : 'none';
-    document.getElementById('en').style.display = lang==='en' ? 'block' : 'none';
-    document.documentElement.lang = lang;
-}
-// Auto-detect language
-(function(){
-    const navLang = navigator.language || navigator.userLanguage || '';
-    const lang = navLang.startsWith('es') ? 'es' : 'en';
-    setLang(lang);
-})();
+// Cleaned up old language toggling logic
 // Update date/time every second for both languages
 setInterval(()=>{
     const now = new Date();

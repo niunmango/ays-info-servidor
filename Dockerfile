@@ -36,9 +36,9 @@ USER app
 # Exponer puerto
 EXPOSE 5000
 
-# Health check para el contenedor
+# Health check para el contenedor (usando python para evitar requerir curl)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/ || exit 1
+    CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" || exit 1
 
 # Ejecutar con gunicorn (más adecuado para producción que Flask dev server)
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "app:app"]
