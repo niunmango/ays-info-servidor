@@ -2,63 +2,651 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información del Servidor / Server Information</title>
     <style>
-        body {font-family: 'Roboto', sans-serif; background:#e8e6e6; display:flex; flex-direction:column; align-items:center; min-height:100vh; margin:0;}
-        .container {background:#fff; padding:20px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,.1); width:80%; max-width:800px;}
-        h1, h2 {color:#3f51b5;}
-        .date-time {font-size:1.2em; font-weight:bold; color:#d32f2f; background:#ffebee; padding:8px 12px; border-radius:4px; margin:10px 0; display:inline-block;}
-        pre{background:#fff; border:1px solid #ccc; padding:10px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; margin-bottom:20px;}
-        .lang-toggle {margin-bottom:15px;}
+        :root {
+            --primary: #005cbb;
+            --on-primary: #ffffff;
+            --primary-container: #d3e4ff;
+            --on-primary-container: #001c3b;
+            --background: #f8fafc;
+            --on-background: #1a1c1e;
+            --surface: #ffffff;
+            --on-surface: #1a1c1e;
+            --surface-variant: #f1f5f9;
+            --on-surface-variant: #43474e;
+            --outline: #73777f;
+            --outline-variant: #c3c7cf;
+            --shadow: rgba(0, 0, 0, 0.05);
+            --border-radius-m: 12px;
+            --border-radius-l: 16px;
+            --border-radius-xl: 24px;
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            --transition: all 0.25s cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #a8c7fa;
+                --on-primary: #003062;
+                --primary-container: #004589;
+                --on-primary-container: #d3e4ff;
+                --background: #0f172a;
+                --on-background: #e2e8f0;
+                --surface: #1e293b;
+                --on-surface: #f1f5f9;
+                --surface-variant: #334155;
+                --on-surface-variant: #cbd5e1;
+                --outline: #8e9199;
+                --outline-variant: #43474e;
+                --shadow: rgba(0, 0, 0, 0.25);
+            }
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--background);
+            color: var(--on-background);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            transition: var(--transition);
+        }
+
+        body.lang-es [lang="en"] { display: none !important; }
+        body.lang-en [lang="es"] { display: none !important; }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            box-sizing: border-box;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-bottom: 1px solid var(--outline-variant);
+            padding-bottom: 24px;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title p {
+            margin: 6px 0 0 0;
+            color: var(--on-surface-variant);
+            font-size: 0.95rem;
+        }
+
+        .segmented-control {
+            display: flex;
+            background: var(--surface-variant);
+            border-radius: 20px;
+            padding: 4px;
+            border: 1px solid var(--outline-variant);
+        }
+
+        .segmented-control button {
+            background: transparent;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-family: var(--font-family);
+            font-weight: 600;
+            color: var(--on-surface-variant);
+            transition: var(--transition);
+        }
+
+        .segmented-control button:hover {
+            color: var(--on-background);
+        }
+
+        .segmented-control button.active {
+            background: var(--primary-container);
+            color: var(--on-primary-container);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--border-radius-l);
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px var(--shadow), 0 2px 4px -2px var(--shadow);
+            border: 1px solid var(--outline-variant);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px var(--shadow), 0 4px 6px -4px var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--on-background);
+        }
+
+        .card-content {
+            flex-grow: 1;
+        }
+
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .card-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-label {
+            color: var(--on-surface-variant);
+            font-weight: 500;
+        }
+
+        .card-value {
+            font-weight: 600;
+        }
+
+        .date-time-container {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--primary-container);
+            padding: 10px 16px;
+            border-radius: var(--border-radius-m);
+            margin-top: 12px;
+            width: fit-content;
+        }
+
+        .pulse-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 var(--primary); opacity: 0.7; }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 8px transparent; opacity: 1; }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 transparent; opacity: 0.7; }
+        }
+
+        .progress-bar-container {
+            background: var(--surface-variant);
+            border-radius: 8px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .progress-bar-fill {
+            background: var(--primary);
+            height: 100%;
+            width: 0%;
+            border-radius: 8px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-bar-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--on-surface-variant);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .terminal-card {
+            grid-column: 1 / -1;
+        }
+
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .terminal-title-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-title-container h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .terminal-status {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--on-surface-variant);
+            gap: 6px;
+        }
+
+        .terminal-container {
+            background: #0f172a;
+            border-radius: var(--border-radius-l);
+            border: 1px solid #334155;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        .terminal-topbar {
+            background: #1e293b;
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #f59e0b; }
+        .dot-green { background: #10b981; }
+
+        .terminal-title {
+            margin-left: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        pre.terminal-content {
+            margin: 0;
+            padding: 20px;
+            color: #f8fafc;
+            background: transparent;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre;
+            max-height: 450px;
+            border: none;
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #0f172a;
+        }
+
+        pre.terminal-content::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        pre.terminal-content::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        pre.terminal-content::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        .icon {
+            flex-shrink: 0;
+        }
+
+        footer {
+            margin-top: 48px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--on-surface-variant);
+            border-top: 1px solid var(--outline-variant);
+            padding-top: 24px;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
-<body>
+<body class="lang-es">
 <div class="container">
-    <div class="lang-toggle">
-        <button onclick="setLang('es')">Español</button>
-        <button onclick="setLang('en')">English</button>
-    </div>
-    <div id="es" class="lang-section">
-        <h1>Información del Servidor</h1>
-        <h2>by niunmango</h2>
-        <p>Nombre del Host: {{ hostname }}</p>
-        <p class="date-time" id="date-time-es">Fecha Actual: {{ current_date }}</p>
-        <p>Espacio Total: {{ total_space }}</p>
-        <p>Espacio Libre: {{ free_space }}</p>
-        <h2>Salida del Comando Top</h2>
-        <pre id="top-output-es">{{ top_output }}</pre>
-    </div>
-    <div id="en" class="lang-section" style="display:none;">
-        <h1>Server Information</h1>
-        <h2>by niunmango</h2>
-        <p>Host Name: {{ hostname }}</p>
-        <p class="date-time" id="date-time-en">Current Date: {{ current_date }}</p>
-        <p>Total Space: {{ total_space }}</p>
-        <p>Free Space: {{ free_space }}</p>
-        <h2>Top Command Output</h2>
-        <pre id="top-output-en">{{ top_output }}</pre>
-    </div>
+    <header>
+        <div class="header-title">
+            <h1>
+                <svg class="icon" viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="2" width="20" height="8" rx="2"/>
+                    <rect x="2" y="14" width="20" height="8" rx="2"/>
+                    <circle cx="6" cy="6" r="1" fill="currentColor"/>
+                    <circle cx="10" cy="6" r="1" fill="currentColor"/>
+                    <circle cx="6" cy="18" r="1" fill="currentColor"/>
+                    <circle cx="10" cy="18" r="1" fill="currentColor"/>
+                </svg>
+                <span lang="es">Información del Servidor</span>
+                <span lang="en">Server Information</span>
+            </h1>
+            <p>
+                <span lang="es">Monitoreo en tiempo real por niunmango</span>
+                <span lang="en">Real-time monitoring by niunmango</span>
+            </p>
+        </div>
+        <div class="segmented-control">
+            <button id="btn-es" class="active" onclick="changeLang('es')">Español</button>
+            <button id="btn-en" onclick="changeLang('en')">English</button>
+        </div>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- System info Card -->
+        <section class="card">
+            <div class="card-content">
+                <div class="card-header">
+                    <svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
+                        <rect x="9" y="9" width="6" height="6"/>
+                        <line x1="9" y1="1" x2="9" y2="4"/>
+                        <line x1="15" y1="1" x2="15" y2="4"/>
+                        <line x1="9" y1="20" x2="9" y2="23"/>
+                        <line x1="15" y1="20" x2="15" y2="23"/>
+                        <line x1="20" y1="9" x2="23" y2="9"/>
+                        <line x1="20" y1="15" x2="23" y2="15"/>
+                        <line x1="1" y1="9" x2="4" y2="9"/>
+                        <line x1="1" y1="15" x2="4" y2="15"/>
+                    </svg>
+                    <h2>
+                        <span lang="es">Sistema</span>
+                        <span lang="en">System</span>
+                    </h2>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">Host:</span>
+                    <span class="card-value">{{ hostname }}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">
+                        <span lang="es">Fecha / Hora:</span>
+                        <span lang="en">Date / Time:</span>
+                    </span>
+                </div>
+                <div class="date-time-container">
+                    <span class="pulse-indicator"></span>
+                    <span id="date-time-es" lang="es">{{ current_date }}</span>
+                    <span id="date-time-en" lang="en">{{ current_date }}</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Disk Card -->
+        <section class="card">
+            <div class="card-content">
+                <div class="card-header">
+                    <svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
+                        <rect x="6" y="6" width="12" height="8" rx="1" ry="1"/>
+                        <circle cx="10" cy="17" r="1"/>
+                        <circle cx="14" cy="17" r="1"/>
+                    </svg>
+                    <h2>
+                        <span lang="es">Disco</span>
+                        <span lang="en">Storage</span>
+                    </h2>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">
+                        <span lang="es">Total:</span>
+                        <span lang="en">Total:</span>
+                    </span>
+                    <span class="card-value storage-total">{{ total_space }}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">
+                        <span lang="es">Disponible:</span>
+                        <span lang="en">Available:</span>
+                    </span>
+                    <span class="card-value storage-free">{{ free_space }}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">
+                        <span lang="es">Usado:</span>
+                        <span lang="en">Used:</span>
+                    </span>
+                    <span class="card-value storage-used">-</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="storage-bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-bar-text">
+                    <span lang="es">Uso</span>
+                    <span lang="en">Usage</span>
+                    <span class="storage-percent">-</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Memory Card -->
+        <section class="card">
+            <div class="card-content">
+                <div class="card-header">
+                    <svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="4" width="12" height="16" rx="2" />
+                        <line x1="2" y1="8" x2="6" y2="8" />
+                        <line x1="2" y1="12" x2="6" y2="12" />
+                        <line x1="2" y1="16" x2="6" y2="16" />
+                        <line x1="18" y1="8" x2="22" y2="8" />
+                        <line x1="18" y1="12" x2="22" y2="12" />
+                        <line x1="18" y1="16" x2="22" y2="16" />
+                    </svg>
+                    <h2>
+                        <span lang="es">Memoria RAM</span>
+                        <span lang="en">Memory</span>
+                    </h2>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">
+                        <span lang="es">Total:</span>
+                        <span lang="en">Total:</span>
+                    </span>
+                    <span class="card-value memory-total">{{ mem_total }}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">
+                        <span lang="es">Disponible:</span>
+                        <span lang="en">Available:</span>
+                    </span>
+                    <span class="card-value memory-available">{{ mem_available }}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">
+                        <span lang="es">Usada:</span>
+                        <span lang="en">Used:</span>
+                    </span>
+                    <span class="card-value memory-used">-</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="memory-bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-bar-text">
+                    <span lang="es">Uso</span>
+                    <span lang="en">Usage</span>
+                    <span class="memory-percent">-</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Output Terminal Card -->
+        <section class="card terminal-card">
+            <div class="terminal-header">
+                <div class="terminal-title-container">
+                    <svg class="icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 17 10 11 4 5" />
+                        <line x1="12" y1="19" x2="20" y2="19" />
+                    </svg>
+                    <h2>
+                        <span lang="es">Procesos Activos</span>
+                        <span lang="en">Active Processes</span>
+                    </h2>
+                </div>
+                <div class="terminal-status">
+                    <span class="pulse-indicator"></span>
+                    <span lang="es">Actualiza cada 4s</span>
+                    <span lang="en">Updates every 4s</span>
+                </div>
+            </div>
+            <div class="terminal-container">
+                <div class="terminal-topbar">
+                    <span class="terminal-dot dot-red"></span>
+                    <span class="terminal-dot dot-yellow"></span>
+                    <span class="terminal-dot dot-green"></span>
+                    <span class="terminal-title">top -bn1 -o %CPU</span>
+                </div>
+                <pre id="top-output" class="terminal-content">{{ top_output }}</pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>
+            <span lang="es">Creado por niunmango | Modificado por Hermes Agent</span>
+            <span lang="en">Created by niunmango | Modified by Hermes Agent</span>
+        </p>
+    </footer>
 </div>
+
 <script>
-function setLang(lang){
-    document.getElementById('es').style.display = lang==='es' ? 'block' : 'none';
-    document.getElementById('en').style.display = lang==='en' ? 'block' : 'none';
+function changeLang(lang) {
+    document.body.className = 'lang-' + lang;
+    document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    localStorage.setItem('preferred-lang', lang);
 }
-// Update date/time every second for both languages
+
+// Load preferred language
+const savedLang = localStorage.getItem('preferred-lang') || 'es';
+changeLang(savedLang);
+
+// Helper to parse human-readable storage sizes (e.g. "975.0 GB", "16.0 GB")
+function parseSize(sizeStr) {
+    if (!sizeStr) return 0;
+    const match = sizeStr.match(/([0-9.]+)\s*([A-Z]+)/i);
+    if (!match) return 0;
+    const val = parseFloat(match[1]);
+    const unit = match[2].toUpperCase();
+    const multipliers = { 'B': 1, 'KB': 1024, 'MB': 1024**2, 'GB': 1024**3, 'TB': 1024**4, 'PB': 1024**5 };
+    return val * (multipliers[unit] || 1);
+}
+
+// Helper to format bytes to human-readable string
+function formatBytes(bytes) {
+    if (bytes <= 0 || isNaN(bytes)) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function updateStorage() {
+    const totalStr = "{{ total_space }}";
+    const freeStr = "{{ free_space }}";
+    const totalBytes = parseSize(totalStr);
+    const freeBytes = parseSize(freeStr);
+    const usedBytes = Math.max(0, totalBytes - freeBytes);
+    const percent = totalBytes > 0 ? (usedBytes / totalBytes) * 100 : 0;
+    
+    document.querySelectorAll('.storage-used').forEach(el => el.textContent = formatBytes(usedBytes));
+    
+    const fillEl = document.getElementById('storage-bar-fill');
+    if (fillEl) fillEl.style.width = percent.toFixed(1) + '%';
+    document.querySelectorAll('.storage-percent').forEach(el => el.textContent = percent.toFixed(1) + '%');
+}
+
+// Helper to update memory stats
+function updateMemory() {
+    const totalStr = "{{ mem_total }}";
+    const availStr = "{{ mem_available }}";
+    const totalBytes = parseSize(totalStr);
+    const availBytes = parseSize(availStr);
+    const usedBytes = Math.max(0, totalBytes - availBytes);
+    const percent = totalBytes > 0 ? (usedBytes / totalBytes) * 100 : 0;
+    
+    document.querySelectorAll('.memory-used').forEach(el => el.textContent = formatBytes(usedBytes));
+    
+    const fillEl = document.getElementById('memory-bar-fill');
+    if (fillEl) fillEl.style.width = percent.toFixed(1) + '%';
+    document.querySelectorAll('.memory-percent').forEach(el => el.textContent = percent.toFixed(1) + '%');
+}
+
+// Initial resource calculations
+updateStorage();
+updateMemory();
+
+// Update date/time every second
 setInterval(()=>{
     const now = new Date();
     const es = now.toLocaleString('es-ES', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
     const en = now.toLocaleString('en-GB', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
-    document.getElementById('date-time-es').textContent = 'Fecha Actual: '+es;
-    document.getElementById('date-time-en').textContent = 'Current Date: '+en;
-},1000);
-// Update top output every 4 seconds for both sections
+    document.getElementById('date-time-es').textContent = es;
+    document.getElementById('date-time-en').textContent = en;
+}, 1000);
+
+// Update top output every 4 seconds
 setInterval(()=>{
     fetch('/top').then(r=>r.text()).then(d=>{
-        document.getElementById('top-output-es').textContent = d;
-        document.getElementById('top-output-en').textContent = d;
+        document.getElementById('top-output').textContent = d;
     });
-},4000);
+}, 4000);
 </script>
 </body>
 </html>
