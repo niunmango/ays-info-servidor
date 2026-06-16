@@ -1,93 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Información del Servidor</title>
+    <meta charset="UTF-8">
+    <title>Información del Servidor / Server Information</title>
     <style>
-        body {
-            font-family: 'Roboto', sans-serif; /* Material Design font */
-            background-color: #e8e6e6; /* Light gray background */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        h1, h2 {
-            color: #3f51b5; /* Material Design blue */
-        }
-
-        p {
-            color: #212121; /* Dark gray text */
-            margin-bottom: 10px;
-        }
-
-        .date-time {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #d32f2f; /* Material Design red for emphasis */
-            background-color: #ffebee;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin: 10px 0;
-            display: inline-block;
-        }
-
-        pre {
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-            margin-bottom: 20px;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 80%;
-            max-width: 800px;
-        }
+        body {font-family: 'Roboto', sans-serif; background:#e8e6e6; display:flex; flex-direction:column; align-items:center; min-height:100vh; margin:0;}
+        .container {background:#fff; padding:20px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,.1); width:80%; max-width:800px;}
+        h1, h2 {color:#3f51b5;}
+        .date-time {font-size:1.2em; font-weight:bold; color:#d32f2f; background:#ffebee; padding:8px 12px; border-radius:4px; margin:10px 0; display:inline-block;}
+        pre{background:#fff; border:1px solid #ccc; padding:10px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; margin-bottom:20px;}
+        .lang-toggle {margin-bottom:15px;}
     </style>
 </head>
 <body>
-    <div class="container">
+<div class="container">
+    <div class="lang-toggle">
+        <button onclick="setLang('es')">Español</button>
+        <button onclick="setLang('en')">English</button>
+    </div>
+    <div id="es" class="lang-section">
         <h1>Información del Servidor</h1>
         <h2>by niunmango</h2>
         <p>Nombre del Host: {{ hostname }}</p>
-        <p class="date-time" id="date-time">Fecha Actual: {{ current_date }}</p>
+        <p class="date-time" id="date-time-es">Fecha Actual: {{ current_date }}</p>
         <p>Espacio Total: {{ total_space }}</p>
         <p>Espacio Libre: {{ free_space }}</p>
         <h2>Salida del Comando Top</h2>
-        <pre id="top-output">{{ top_output }}</pre>
+        <pre id="top-output-es">{{ top_output }}</pre>
     </div>
-    <script>
-        // Update date/time every second
-        setInterval(function() {
-            const now = new Date();
-            const dateString = now.toLocaleString('es-ES', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            });
-            document.getElementById('date-time').textContent = 'Fecha Actual: ' + dateString;
-        }, 1000);
-        
-        // Update top output every 4 seconds (existing functionality)
-        setInterval(function() {
-            fetch('/top')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('top-output').textContent = data;
-                });
-        }, 4000);
-    </script>
+    <div id="en" class="lang-section" style="display:none;">
+        <h1>Server Information</h1>
+        <h2>by niunmango</h2>
+        <p>Host Name: {{ hostname }}</p>
+        <p class="date-time" id="date-time-en">Current Date: {{ current_date }}</p>
+        <p>Total Space: {{ total_space }}</p>
+        <p>Free Space: {{ free_space }}</p>
+        <h2>Top Command Output</h2>
+        <pre id="top-output-en">{{ top_output }}</pre>
+    </div>
+</div>
+<script>
+function setLang(lang){
+    document.getElementById('es').style.display = lang==='es' ? 'block' : 'none';
+    document.getElementById('en').style.display = lang==='en' ? 'block' : 'none';
+}
+// Update date/time every second for both languages
+setInterval(()=>{
+    const now = new Date();
+    const es = now.toLocaleString('es-ES', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    const en = now.toLocaleString('en-GB', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+    document.getElementById('date-time-es').textContent = 'Fecha Actual: '+es;
+    document.getElementById('date-time-en').textContent = 'Current Date: '+en;
+},1000);
+// Update top output every 4 seconds for both sections
+setInterval(()=>{
+    fetch('/top').then(r=>r.text()).then(d=>{
+        document.getElementById('top-output-es').textContent = d;
+        document.getElementById('top-output-en').textContent = d;
+    });
+},4000);
+</script>
 </body>
 </html>
