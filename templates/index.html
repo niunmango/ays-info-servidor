@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Información del Servidor / Server Information</title>
@@ -10,6 +10,10 @@
         .date-time {font-size:1.2em; font-weight:bold; color:#d32f2f; background:#ffebee; padding:8px 12px; border-radius:4px; margin:10px 0; display:inline-block;}
         pre{background:#fff; border:1px solid #ccc; padding:10px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; margin-bottom:20px;}
         .lang-toggle {margin-bottom:15px;}
+        .lang-toggle button {
+            background:#3f51b5; color:#fff; border:none; padding:8px 12px; margin-right:8px; border-radius:4px; cursor:pointer; font-size:0.9em;
+        }
+        .lang-toggle button:hover {background:#303f9f;}
     </style>
 </head>
 <body>
@@ -18,7 +22,7 @@
         <button onclick="setLang('es')">Español</button>
         <button onclick="setLang('en')">English</button>
     </div>
-    <div id="es" class="lang-section">
+    <div id="es" class="lang-section" style="display:none;">
         <h1>Información del Servidor</h1>
         <h2>by niunmango</h2>
         <p>Nombre del Host: {{ hostname }}</p>
@@ -43,7 +47,14 @@
 function setLang(lang){
     document.getElementById('es').style.display = lang==='es' ? 'block' : 'none';
     document.getElementById('en').style.display = lang==='en' ? 'block' : 'none';
+    document.documentElement.lang = lang;
 }
+// Auto-detect language
+(function(){
+    const navLang = navigator.language || navigator.userLanguage || '';
+    const lang = navLang.startsWith('es') ? 'es' : 'en';
+    setLang(lang);
+})();
 // Update date/time every second for both languages
 setInterval(()=>{
     const now = new Date();
